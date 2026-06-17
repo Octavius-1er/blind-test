@@ -255,13 +255,11 @@
 </head>
 <body>
 
-<!-- CONFIG SCREEN -->
 <div id="config-screen">
   <h1>🎵 Blind Test</h1>
   <p class="subtitle">Interface professeur — configurez la session puis lancez le jeu</p>
 
   <div class="grid">
-    <!-- Créer session -->
     <div class="card">
       <div class="card-title">1 — Créer la session</div>
 
@@ -280,7 +278,6 @@
       </div>
     </div>
 
-    <!-- Ajouter rounds -->
     <div class="card">
       <div class="card-title">2 — Ajouter des extraits</div>
       <label>Lien YouTube</label>
@@ -302,12 +299,10 @@
   </div>
 </div>
 
-<!-- GAME SCREEN -->
 <div id="game-screen" class="hidden">
   <h1>🎵 Blind Test — En cours</h1>
 
   <div class="grid">
-    <!-- Colonne gauche: lecture + contrôles -->
     <div>
       <div class="card" style="margin-bottom:16px">
         <div class="round-nav">
@@ -329,14 +324,12 @@
         </div>
       </div>
 
-      <!-- Élèves connectés -->
       <div class="card">
         <div class="card-title">Élèves connectés</div>
         <div class="players-chips" id="players-chips"></div>
       </div>
     </div>
 
-    <!-- Colonne droite: buzzers + scores -->
     <div>
       <div class="card" style="margin-bottom:16px">
         <div class="card-title">File de buzzers</div>
@@ -346,7 +339,6 @@
         </div>
         <ul class="buzzer-queue" id="buzzer-queue"></ul>
 
-        <!-- Boutons validation (visibles quand il y a un premier buzzer) -->
         <div id="validation-btns" class="hidden actions-row">
           <button class="btn btn-success" onclick="validateBuzzer(true)">✅ Bonne réponse</button>
           <button class="btn btn-danger" onclick="validateBuzzer(false)">❌ Mauvaise réponse</button>
@@ -361,7 +353,6 @@
   </div>
 </div>
 
-<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, push, onValue, update, remove, get }
@@ -414,6 +405,7 @@ window.createSession = async function() {
     rounds: {},
     players: {},
     buzzers: {},
+    revealAnswer: false,
     createdAt: Date.now()
   });
 
@@ -510,8 +502,8 @@ function loadRound(idx) {
   container.innerHTML = `<iframe src="https://www.youtube.com/embed/${r.ytId}?start=${r.start}&autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
   document.getElementById('answer-text').textContent = r.answer;
 
-  // Mettre à jour Firebase
-  update(ref(db, `sessions/${sessionCode}`), { currentRound: idx, roundActive: true });
+  // Mettre à jour Firebase (Masque la réponse pour le nouveau round)
+  update(ref(db, `sessions/${sessionCode}`), { currentRound: idx, roundActive: true, revealAnswer: false });
   // Vider buzzers
   set(ref(db, `sessions/${sessionCode}/buzzers`), null);
 }
@@ -523,9 +515,14 @@ window.prevRound = function() {
   if (currentRound > 0) loadRound(currentRound - 1);
 };
 
-window.toggleAnswer = function() {
+window.toggleAnswer = async function() {
   answerVisible = !answerVisible;
   document.getElementById('answer-box').classList.toggle('hidden', !answerVisible);
+  
+  // Met à jour la base de données en temps réel pour le tableau
+  if (sessionCode) {
+    await update(ref(db, `sessions/${sessionCode}`), { revealAnswer: answerVisible });
+  }
 };
 
 window.clearBuzzers = function() {
@@ -545,9 +542,10 @@ window.validateBuzzer = async function(correct) {
     await update(pRef, { score: current + 1 });
     // Vider la file
     await set(ref(db, `sessions/${sessionCode}/buzzers`), null);
-    // Révéler réponse
+    // Révéler réponse localement et sur le tableau
     answerVisible = true;
     document.getElementById('answer-box').classList.remove('hidden');
+    await update(ref(db, `sessions/${sessionCode}`), { revealAnswer: true });
   } else {
     // Mauvaise réponse: enlever le 1er de la file
     await remove(ref(db, `sessions/${sessionCode}/buzzers/${first.key}`));
