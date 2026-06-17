@@ -535,21 +535,25 @@ window.validateBuzzer = async function(correct) {
   const first = buzzersSnapshot[0];
 
   if (correct) {
-    // +1 point au joueur
+    // 1. BONNE RÉPONSE : On donne le point et on révèle la réponse partout
     const pRef = ref(db, `sessions/${sessionCode}/players/${first.pseudo}`);
     const snap = await get(pRef);
     const current = snap.val()?.score || 0;
     await update(pRef, { score: current + 1 });
-    // Vider la file
-    await set(ref(db, `sessions/${sessionCode}/buzzers`), null);
-    // Révéler réponse localement et sur le tableau
+    
     answerVisible = true;
     document.getElementById('answer-box').classList.remove('hidden');
     await update(ref(db, `sessions/${sessionCode}`), { revealAnswer: true });
   } else {
-    // Mauvaise réponse: enlever le 1er de la file
-    await remove(ref(db, `sessions/${sessionCode}/buzzers/${first.key}`));
+    // 2. MAUVAISE RÉPONSE : On ne donne pas de point et on ne révèle RIEN.
+    // Le suspense reste entier pour le reste de la classe !
+    console.log(`${first.pseudo} s'est trompé.`);
   }
+
+  // 3. DANS LES DEUX CAS : On vide immédiatement toute la file des buzzers
+  // En effaçant la file, l'écran des élèves se débloque automatiquement
+  // et le premier qui ré-appuie prend la main sur la même musique !
+  await set(ref(db, `sessions/${sessionCode}/buzzers`), null);
 };
 
 function renderBuzzers() {
