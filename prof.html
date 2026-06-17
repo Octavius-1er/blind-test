@@ -270,10 +270,13 @@
       </div>
 
       <div id="session-info" class="hidden">
-        <label>Code de la session (à dicter aux élèves)</label>
+        <label>Code de la session</label>
         <div class="session-code" id="display-code">----</div>
+        <div style="text-align:center;margin:12px 0">
+          <img id="qr-code-img" src="" alt="QR Code" style="width:120px;height:120px;border-radius:8px;background:#fff;padding:4px;" />
+        </div>
         <div style="font-size:0.8rem;color:var(--muted);text-align:center">
-          Les élèves ouvrent <strong>eleve.html</strong> et saisissent ce code
+          Les élèves scannent le QR code ou ouvrent <strong>eleve.html</strong> et saisissent le code
         </div>
       </div>
     </div>
@@ -414,6 +417,12 @@ window.createSession = async function() {
   document.getElementById('create-section').classList.add('hidden');
   document.getElementById('add-round-btn').disabled = false;
 
+  // Générer QR code vers eleve.html
+  const base = window.location.href.split('?')[0].replace(/prof\.html$/, 'eleve.html');
+  const joinUrl = base + '?code=' + sessionCode;
+  document.getElementById('qr-code-img').src =
+    `https://api.qrserver.com/v1/create-qr-code/?size=140x140&bgcolor=ffffff&color=000000&data=${encodeURIComponent(joinUrl)}`;
+
   // Écoute les joueurs
   onValue(ref(db, `sessions/${sessionCode}/players`), snap => {
     const players = snap.val() || {};
@@ -497,9 +506,9 @@ function loadRound(idx) {
   document.getElementById('answer-box').classList.add('hidden');
   document.getElementById('round-counter').textContent = `Round ${idx+1} / ${rounds.length}`;
 
-  // Embed YouTube
+  // Embed YouTube sans autoplay (les navigateurs bloquent l'autoplay sans interaction)
   const container = document.getElementById('yt-container');
-  container.innerHTML = `<iframe src="https://www.youtube.com/embed/${r.ytId}?start=${r.start}&autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+  container.innerHTML = `<iframe id="yt-iframe" src="https://www.youtube.com/embed/${r.ytId}?start=${r.start}&autoplay=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
   document.getElementById('answer-text').textContent = r.answer;
 
   // Mettre à jour Firebase (Masque la réponse pour le nouveau round)
