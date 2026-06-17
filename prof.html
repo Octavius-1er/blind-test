@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blind Test — Professeur</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --bg: #0e0e14;
+    --surface: #17171f;
+    --surface2: #1f1f2e;
+    --border: #2a2a3d;
+    --accent: #7c6af7;
+    --accent2: #f7c06a;
+    --green: #4ade80;
+    --red: #f87171;
+    --text: #e8e8f0;
+    --muted: #6b6b88;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  h1 {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .subtitle { color: var(--muted); font-size: 0.85rem; margin-bottom: 32px; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+
+  .card-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  label { font-size: 0.85rem; color: var(--muted); display: block; margin-bottom: 6px; }
+
+  input, select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.95rem;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.15s;
+    margin-bottom: 12px;
+  }
+  input:focus, select:focus { border-color: var(--accent); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-success { background: var(--green); color: #000; }
+  .btn-danger { background: var(--red); color: #fff; }
+  .btn-ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-warn { background: var(--accent2); color: #000; }
+  .btn-full { width: 100%; justify-content: center; margin-top: 8px; }
+
+  .session-code {
+    font-family: 'Space Mono', monospace;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--accent2);
+    letter-spacing: 0.15em;
+    text-align: center;
+    padding: 16px;
+    background: var(--surface2);
+    border-radius: 8px;
+    margin: 12px 0;
+  }
+
+  .round-list { list-style: none; }
+  .round-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--surface2);
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 0.88rem;
+  }
+  .round-item .idx {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    min-width: 24px;
+  }
+  .round-item .info { flex: 1; overflow: hidden; }
+  .round-item .yt { color: var(--muted); font-size: 0.78rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .round-item.active-round { border: 1px solid var(--accent); }
+
+  .buzzer-queue { list-style: none; }
+  .buzzer-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--surface2);
+    border-radius: 6px;
+    margin-bottom: 8px;
+    animation: slideIn 0.2s ease;
+  }
+  @keyframes slideIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+  .buzzer-item .pos {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent2);
+    min-width: 28px;
+  }
+  .buzzer-item .name { font-weight: 600; flex: 1; }
+  .buzzer-item.first { background: #2a1f6b; border: 1px solid var(--accent); }
+
+  .score-list { list-style: none; }
+  .score-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+  }
+  .score-item .sname { flex: 1; }
+  .score-item .spts {
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    background: var(--surface2);
+    margin-bottom: 16px;
+    font-size: 0.85rem;
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--muted);
+    flex-shrink: 0;
+  }
+  .dot.live { background: var(--green); animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .yt-preview {
+    aspect-ratio: 16/9;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 10px 0;
+  }
+  .yt-preview iframe { width: 100%; height: 100%; border: none; }
+
+  .tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--surface2);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  #config-screen, #game-screen { }
+  .hidden { display: none !important; }
+
+  .actions-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+  .answer-reveal {
+    font-family: 'Space Mono', monospace;
+    font-size: 1rem;
+    color: var(--accent2);
+    padding: 10px 14px;
+    background: var(--surface2);
+    border-radius: 6px;
+    margin: 8px 0;
+  }
+
+  .players-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .chip {
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .round-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .round-nav span {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--muted);
+    flex: 1;
+    text-align: center;
+  }
+
+  hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+</style>
+</head>
+<body>
+
+<!-- CONFIG SCREEN -->
+<div id="config-screen">
+  <h1>🎵 Blind Test</h1>
+  <p class="subtitle">Interface professeur — configurez la session puis lancez le jeu</p>
+
+  <div class="grid">
+    <!-- Créer session -->
+    <div class="card">
+      <div class="card-title">1 — Créer la session</div>
+
+      <div id="create-section">
+        <label>Nom de la session</label>
+        <input type="text" id="session-name" placeholder="Ex: Blind Test CM2 — Juin 2025" />
+        <button class="btn btn-primary btn-full" onclick="createSession()">Créer la session</button>
+      </div>
+
+      <div id="session-info" class="hidden">
+        <label>Code de la session (à dicter aux élèves)</label>
+        <div class="session-code" id="display-code">----</div>
+        <div style="font-size:0.8rem;color:var(--muted);text-align:center">
+          Les élèves ouvrent <strong>eleve.html</strong> et saisissent ce code
+        </div>
+      </div>
+    </div>
+
+    <!-- Ajouter rounds -->
+    <div class="card">
+      <div class="card-title">2 — Ajouter des extraits</div>
+      <label>Lien YouTube</label>
+      <input type="text" id="yt-url" placeholder="https://www.youtube.com/watch?v=..." />
+      <label>Réponse (titre / artiste)</label>
+      <input type="text" id="yt-answer" placeholder="Ex: Stromae — Alors on danse" />
+      <label>Démarrer à (secondes, optionnel)</label>
+      <input type="number" id="yt-start" placeholder="0" min="0" />
+      <button class="btn btn-primary btn-full" id="add-round-btn" onclick="addRound()" disabled>Ajouter cet extrait</button>
+
+      <ul class="round-list" id="round-list" style="margin-top:16px"></ul>
+    </div>
+  </div>
+
+  <div style="margin-top:20px;text-align:center">
+    <button class="btn btn-success" id="start-game-btn" onclick="startGame()" disabled style="padding:14px 40px;font-size:1.1rem">
+      ▶ Lancer le blind test
+    </button>
+  </div>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="game-screen" class="hidden">
+  <h1>🎵 Blind Test — En cours</h1>
+
+  <div class="grid">
+    <!-- Colonne gauche: lecture + contrôles -->
+    <div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="round-nav">
+          <button class="btn btn-ghost" onclick="prevRound()">◀</button>
+          <span id="round-counter">Round 1 / ?</span>
+          <button class="btn btn-ghost" onclick="nextRound()">▶</button>
+        </div>
+
+        <div class="yt-preview" id="yt-container"></div>
+
+        <div class="answer-reveal hidden" id="answer-box">
+          Réponse : <span id="answer-text"></span>
+        </div>
+
+        <div class="actions-row">
+          <button class="btn btn-ghost" onclick="toggleAnswer()">👁 Révéler réponse</button>
+          <button class="btn btn-warn" onclick="clearBuzzers()">🔄 Vider la file</button>
+          <button class="btn btn-danger" onclick="endGame()">⏹ Terminer</button>
+        </div>
+      </div>
+
+      <!-- Élèves connectés -->
+      <div class="card">
+        <div class="card-title">Élèves connectés</div>
+        <div class="players-chips" id="players-chips"></div>
+      </div>
+    </div>
+
+    <!-- Colonne droite: buzzers + scores -->
+    <div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">File de buzzers</div>
+        <div class="status-bar">
+          <div class="dot live" id="status-dot"></div>
+          <span id="status-text">En attente des buzzers…</span>
+        </div>
+        <ul class="buzzer-queue" id="buzzer-queue"></ul>
+
+        <!-- Boutons validation (visibles quand il y a un premier buzzer) -->
+        <div id="validation-btns" class="hidden actions-row">
+          <button class="btn btn-success" onclick="validateBuzzer(true)">✅ Bonne réponse</button>
+          <button class="btn btn-danger" onclick="validateBuzzer(false)">❌ Mauvaise réponse</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Scores</div>
+        <ul class="score-list" id="score-list"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, push, onValue, update, remove, get }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+// ─── CONFIGURE FIREBASE ICI ───────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "VOTRE_API_KEY",
+  authDomain: "VOTRE_PROJECT.firebaseapp.com",
+  databaseURL: "https://VOTRE_PROJECT-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "VOTRE_PROJECT",
+  storageBucket: "VOTRE_PROJECT.appspot.com",
+  messagingSenderId: "VOTRE_SENDER_ID",
+  appId: "VOTRE_APP_ID"
+};
+// ──────────────────────────────────────────────────────────────────────────
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+let sessionCode = null;
+let sessionRef = null;
+let rounds = [];
+let currentRound = 0;
+let player = null;
+let answerVisible = false;
+let buzzersSnapshot = [];
+
+// Générer code session 4 lettres
+function genCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  return Array.from({length:4}, () => chars[Math.floor(Math.random()*chars.length)]).join('');
+}
+
+function ytIdFromUrl(url) {
+  const m = url.match(/(?:v=|youtu\.be\/|embed\/)([^&?/]+)/);
+  return m ? m[1] : null;
+}
+
+// ── CRÉATION SESSION ──────────────────────────────────────────────────────
+window.createSession = async function() {
+  const name = document.getElementById('session-name').value.trim() || 'Blind Test';
+  sessionCode = genCode();
+  sessionRef = ref(db, 'sessions/' + sessionCode);
+
+  await set(sessionRef, {
+    name,
+    status: 'lobby',
+    currentRound: 0,
+    rounds: {},
+    players: {},
+    buzzers: {},
+    createdAt: Date.now()
+  });
+
+  document.getElementById('display-code').textContent = sessionCode;
+  document.getElementById('session-info').classList.remove('hidden');
+  document.getElementById('create-section').classList.add('hidden');
+  document.getElementById('add-round-btn').disabled = false;
+
+  // Écoute les joueurs
+  onValue(ref(db, `sessions/${sessionCode}/players`), snap => {
+    const players = snap.val() || {};
+    renderPlayers(players);
+  });
+};
+
+// ── ROUNDS ────────────────────────────────────────────────────────────────
+window.addRound = async function() {
+  const url = document.getElementById('yt-url').value.trim();
+  const answer = document.getElementById('yt-answer').value.trim();
+  const start = parseInt(document.getElementById('yt-start').value) || 0;
+
+  if (!url || !answer) { alert('Remplis le lien et la réponse !'); return; }
+  const ytId = ytIdFromUrl(url);
+  if (!ytId) { alert('Lien YouTube invalide'); return; }
+
+  rounds.push({ ytId, url, answer, start });
+  await set(ref(db, `sessions/${sessionCode}/rounds`), rounds);
+
+  document.getElementById('yt-url').value = '';
+  document.getElementById('yt-answer').value = '';
+  document.getElementById('yt-start').value = '';
+
+  renderRoundList();
+  document.getElementById('start-game-btn').disabled = (rounds.length === 0);
+};
+
+function renderRoundList() {
+  const ul = document.getElementById('round-list');
+  ul.innerHTML = rounds.map((r,i) => `
+    <li class="round-item">
+      <span class="idx">${i+1}</span>
+      <div class="info">
+        <div>${r.answer}</div>
+        <div class="yt">${r.url}</div>
+      </div>
+      <button onclick="removeRound(${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem">✕</button>
+    </li>
+  `).join('');
+}
+
+window.removeRound = function(i) {
+  rounds.splice(i,1);
+  set(ref(db, `sessions/${sessionCode}/rounds`), rounds);
+  renderRoundList();
+  document.getElementById('start-game-btn').disabled = (rounds.length === 0);
+};
+
+// ── DÉMARRER ──────────────────────────────────────────────────────────────
+window.startGame = async function() {
+  if (!sessionCode || rounds.length === 0) return;
+  await update(ref(db, `sessions/${sessionCode}`), { status: 'playing', currentRound: 0 });
+  document.getElementById('config-screen').classList.add('hidden');
+  document.getElementById('game-screen').classList.remove('hidden');
+
+  currentRound = 0;
+  loadRound(0);
+
+  // Écouter buzzers
+  onValue(ref(db, `sessions/${sessionCode}/buzzers`), snap => {
+    const data = snap.val() || {};
+    buzzersSnapshot = Object.entries(data)
+      .sort((a,b) => a[1].time - b[1].time)
+      .map(([k,v]) => ({key:k,...v}));
+    renderBuzzers();
+  });
+
+  // Écouter scores
+  onValue(ref(db, `sessions/${sessionCode}/players`), snap => {
+    const players = snap.val() || {};
+    renderScores(players);
+    renderPlayers(players);
+  });
+};
+
+function loadRound(idx) {
+  currentRound = idx;
+  const r = rounds[idx];
+  answerVisible = false;
+  document.getElementById('answer-box').classList.add('hidden');
+  document.getElementById('round-counter').textContent = `Round ${idx+1} / ${rounds.length}`;
+
+  // Embed YouTube
+  const container = document.getElementById('yt-container');
+  container.innerHTML = `<iframe src="https://www.youtube.com/embed/${r.ytId}?start=${r.start}&autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+  document.getElementById('answer-text').textContent = r.answer;
+
+  // Mettre à jour Firebase
+  update(ref(db, `sessions/${sessionCode}`), { currentRound: idx, roundActive: true });
+  // Vider buzzers
+  set(ref(db, `sessions/${sessionCode}/buzzers`), null);
+}
+
+window.nextRound = function() {
+  if (currentRound < rounds.length - 1) loadRound(currentRound + 1);
+};
+window.prevRound = function() {
+  if (currentRound > 0) loadRound(currentRound - 1);
+};
+
+window.toggleAnswer = function() {
+  answerVisible = !answerVisible;
+  document.getElementById('answer-box').classList.toggle('hidden', !answerVisible);
+};
+
+window.clearBuzzers = function() {
+  set(ref(db, `sessions/${sessionCode}/buzzers`), null);
+};
+
+// ── VALIDATION BUZZER ─────────────────────────────────────────────────────
+window.validateBuzzer = async function(correct) {
+  if (buzzersSnapshot.length === 0) return;
+  const first = buzzersSnapshot[0];
+
+  if (correct) {
+    // +1 point au joueur
+    const pRef = ref(db, `sessions/${sessionCode}/players/${first.pseudo}`);
+    const snap = await get(pRef);
+    const current = snap.val()?.score || 0;
+    await update(pRef, { score: current + 1 });
+    // Vider la file
+    await set(ref(db, `sessions/${sessionCode}/buzzers`), null);
+    // Révéler réponse
+    answerVisible = true;
+    document.getElementById('answer-box').classList.remove('hidden');
+  } else {
+    // Mauvaise réponse: enlever le 1er de la file
+    await remove(ref(db, `sessions/${sessionCode}/buzzers/${first.key}`));
+  }
+};
+
+function renderBuzzers() {
+  const ul = document.getElementById('buzzer-queue');
+  const validBtns = document.getElementById('validation-btns');
+  const statusText = document.getElementById('status-text');
+
+  if (buzzersSnapshot.length === 0) {
+    ul.innerHTML = '<li style="color:var(--muted);font-size:0.85rem;padding:8px">Aucun buzzer pour l\'instant…</li>';
+    validBtns.classList.add('hidden');
+    statusText.textContent = 'En attente des buzzers…';
+    return;
+  }
+
+  statusText.textContent = `${buzzersSnapshot.length} élève(s) dans la file`;
+  validBtns.classList.remove('hidden');
+
+  ul.innerHTML = buzzersSnapshot.map((b,i) => `
+    <li class="buzzer-item ${i===0?'first':''}">
+      <span class="pos">${i===0?'⭐':i+1}</span>
+      <span class="name">${b.pseudo}</span>
+      ${i===0?'<span class="tag">À interroger</span>':''}
+    </li>
+  `).join('');
+}
+
+function renderScores(players) {
+  const sorted = Object.entries(players).sort((a,b) => (b[1].score||0) - (a[1].score||0));
+  document.getElementById('score-list').innerHTML = sorted.length === 0
+    ? '<li style="color:var(--muted);font-size:0.85rem">Aucun élève connecté</li>'
+    : sorted.map(([name,p],i) => `
+        <li class="score-item">
+          <span style="color:var(--muted);font-family:Space Mono,monospace;font-size:0.8rem">${i+1}</span>
+          <span class="sname">${name}</span>
+          <span class="spts">${p.score||0} pt${(p.score||0)>1?'s':''}</span>
+        </li>
+      `).join('');
+}
+
+function renderPlayers(players) {
+  const chips = document.getElementById('players-chips');
+  if (!chips) return;
+  const keys = Object.keys(players);
+  chips.innerHTML = keys.length === 0
+    ? '<span style="color:var(--muted);font-size:0.85rem">En attente des élèves…</span>'
+    : keys.map(k => `<span class="chip">${k}</span>`).join('');
+}
+
+window.endGame = async function() {
+  if (!confirm('Terminer le blind test ?')) return;
+  await update(ref(db, `sessions/${sessionCode}`), { status: 'ended' });
+  location.reload();
+};
+</script>
+
+</body>
+</html>
