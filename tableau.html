@@ -137,6 +137,14 @@
     border-radius: 6px;
     border: 1px solid var(--border);
   }
+  .header-qr {
+    width: 46px;
+    height: 46px;
+    border-radius: 6px;
+    background: #fff;
+    padding: 3px;
+    display: none;
+  }
 
   .live-dot {
     width: 8px; height: 8px;
@@ -298,6 +306,7 @@
     <span class="round-badge" id="round-badge">Round —</span>
     <div id="tableau-answer-box" style="margin-left: 24px; font-size: 1.1rem; font-weight: 700; color: var(--accent2); background: var(--surface2); padding: 4px 14px; border-radius: 6px; border: 1px solid var(--border); display: none;"></div>
     <span class="header-code" id="header-code"></span>
+    <img id="header-qr" class="header-qr" src="" alt="QR élèves" title="Scanner pour rejoindre" />
   </header>
 
   <div class="buzzer-zone">
@@ -344,6 +353,13 @@ window.connect = async function() {
   document.getElementById('join-view').style.display = 'none';
   document.getElementById('display-view').classList.add('active');
   document.getElementById('header-code').textContent = code;
+
+  // QR code vers eleve.html
+  const base = window.location.href.split('?')[0].replace(/tableau\.html$/, 'eleve.html');
+  const joinUrl = base + '?code=' + code;
+  const qrEl = document.getElementById('header-qr');
+  qrEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&bgcolor=ffffff&color=000000&data=${encodeURIComponent(joinUrl)}`;
+  qrEl.style.display = 'block';
 
   // Session info
   onValue(ref(db, `sessions/${code}`), snap => {
