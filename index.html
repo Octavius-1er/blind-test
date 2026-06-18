@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blind Test</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --bg: #0e0e14;
+    --surface: #17171f;
+    --surface2: #1f1f2e;
+    --border: #2a2a3d;
+    --accent: #7c6af7;
+    --accent2: #f7c06a;
+    --green: #4ade80;
+    --text: #e8e8f0;
+    --muted: #6b6b88;
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.03em;
+    text-align: center;
+  }
+
+  .logo span { color: var(--accent2); }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 8px;
+    margin-bottom: 48px;
+  }
+
+  .cards {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 720px;
+  }
+
+  .card {
+    flex: 1;
+    min-width: 180px;
+    max-width: 220px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 20px;
+    text-decoration: none;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.15s, background 0.2s;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    background: var(--surface2);
+  }
+
+  .card.eleve:hover  { border-color: var(--green); }
+  .card.prof:hover   { border-color: var(--accent); }
+  .card.tableau:hover { border-color: var(--accent2); }
+
+  .card-icon {
+    font-size: 2.6rem;
+    line-height: 1;
+  }
+
+  .card-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+  }
+
+  .card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .card.eleve  .card-title { color: var(--green); }
+  .card.prof   .card-title { color: var(--accent); }
+  .card.tableau .card-title { color: var(--accent2); }
+
+  .card-desc {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .footer {
+    margin-top: 48px;
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+  }
+</style>
+</head>
+<body>
+
+<div class="logo">🎵 Blind<span>Test</span></div>
+<p class="subtitle">Choisissez votre rôle pour commencer</p>
+
+<div class="cards">
+
+  <a class="card eleve" href="eleve.html">
+    <div class="card-icon">🎮</div>
+    <div class="card-label">Je suis</div>
+    <div class="card-title">Élève</div>
+    <div class="card-desc">Rejoindre une partie et buzzer dès que tu reconnais la musique</div>
+  </a>
+
+  <a class="card prof" href="prof.html">
+    <div class="card-icon">🎛️</div>
+    <div class="card-label">Je suis</div>
+    <div class="card-title">Professeur</div>
+    <div class="card-desc">Créer la session, choisir les musiques et gérer le jeu</div>
+  </a>
+
+  <a class="card tableau" href="tableau.html">
+    <div class="card-icon">📺</div>
+    <div class="card-label">Afficher le</div>
+    <div class="card-title">Tableau</div>
+    <div class="card-desc">Vue vidéoprojecteur avec les buzzers et le classement en direct</div>
+  </a>
+
+</div>
+
+<div class="footer">blind-test · made with ♥</div>
+
+</body>
+</html>
