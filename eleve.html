@@ -344,6 +344,16 @@ window.joinSession = async function() {
       // Mon score
       const myScore = s.players?.[pseudo]?.score || 0;
       document.getElementById('my-score').textContent = myScore;
+
+      // Affichage de la réponse si le prof l'a révélée
+      const roundStatus = document.getElementById('round-status');
+      if (s.revealAnswer && s.rounds?.[currentRound]) {
+        roundStatus.textContent = `🎉 ${s.rounds[currentRound].answer}`;
+        roundStatus.className = 'game-status ended';
+      } else if (!s.revealAnswer && roundStatus.classList.contains('ended')) {
+        roundStatus.textContent = `Round ${currentRound + 1}`;
+        roundStatus.className = 'game-status';
+      }
     }
   });
 
