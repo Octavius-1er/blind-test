@@ -321,6 +321,7 @@
         </div>
 
         <div class="actions-row">
+          <button class="btn btn-primary" onclick="playVideo()">▶ Jouer</button>
           <button class="btn btn-ghost" onclick="toggleAnswer()">👁 Révéler réponse</button>
           <button class="btn btn-warn" onclick="clearBuzzers()">🔄 Vider la file</button>
           <button class="btn btn-danger" onclick="endGame()">⏹ Terminer</button>
@@ -516,6 +517,13 @@ function loadRound(idx) {
   // Vider buzzers
   set(ref(db, `sessions/${sessionCode}/buzzers`), null);
 }
+
+window.playVideo = function() {
+  if (currentRound < 0 || currentRound >= rounds.length) return;
+  const r = rounds[currentRound];
+  const container = document.getElementById('yt-container');
+  container.innerHTML = `<iframe id="yt-iframe" src="https://www.youtube.com/embed/${r.ytId}?start=${r.start}&autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+};
 
 window.nextRound = function() {
   if (currentRound < rounds.length - 1) loadRound(currentRound + 1);
